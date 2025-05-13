@@ -1,3 +1,4 @@
+build/
 build/cmake_install.cmake
 build/CMakeCache.txt
 build/compile_commands.json
@@ -44,3 +45,9 @@ build/source/boot/CMakeFiles/boot.dir/flags.make
 build/source/boot/CMakeFiles/boot.dir/link.txt
 build/source/boot/CMakeFiles/boot.dir/progress.make
 build/source/boot/CMakeFiles/boot.dir/start.S.o
+build/.cmake/api/v1/reply/cache-v2-5f250f1d77d7b04446e8.json
+build/.cmake/api/v1/reply/cmakeFiles-v1-e5539c97582c68ccb69c.json
+build/.cmake/api/v1/reply/codemodel-v2-73143a1177f1faa67c7a.json
+build/.cmake/api/v1/reply/index-2025-05-13T16-34-58-0847.json
+build/.cmake/api/v1/reply/target-boot-Debug-9868e7066e3b79e0c273.json
+build/source/boot/CMakeFiles/boot.dir/compiler_depend.internal
