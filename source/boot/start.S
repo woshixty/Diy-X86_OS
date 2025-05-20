@@ -4,6 +4,7 @@
   	.code16
  	.text
 	.global _start
+	.extern boot_entry
 _start:
 	mov $0, %ax
 	mov %ax, %ds
@@ -27,7 +28,8 @@ read_loader:
     int $0x13              // 调用 BIOS 中断
 	jc read_loader
 
-    jmp .                  // 成功后停止
+    jmp boot_entry
+    jmp .
 	
 	// 引导结束段
 	.section boot_end, "ax"
