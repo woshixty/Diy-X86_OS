@@ -22,7 +22,7 @@ read_loader:
     mov $0x8000, %bx       // 加载到 0x8000
     mov $0x2, %ah          // BIOS 13h 功能号：读取扇区
     mov $0x2, %cx          // 扇区号 2
-    mov $64, %al           // 每次读取 1 个扇区
+    mov $64, %al           // 每次读取 64 个扇区
     mov $0x0080, %dx       // 第一个硬盘
     int $0x13              // 调用 BIOS 中断
 	jc read_loader
