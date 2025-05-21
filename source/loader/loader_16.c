@@ -1,5 +1,7 @@
 __asm__(".code16gcc");
 
+#include "loader.h"
+
 static void show_msg(const char* msg) {
     char c;
     while ((c = *msg++) != '\0') {
