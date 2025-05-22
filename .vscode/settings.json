@@ -3,11 +3,14 @@
     "cmake.sourceDirectory": "${workspaceFolder}/.",
     "C_Cpp.errorSquiggles": "Disabled",
     "files.associations": {
+        "*.S": "asm-intel-x86-generic",
         "dirent.h": "c",
         "lib_syscall.h": "c",
         "task.h": "c",
         "types.h": "c",
         "fcntl.h": "c",
-        "_default_fcntl.h": "c"
+        "_default_fcntl.h": "c",
+        "loader.h": "c",
+        "boot_info.h": "c"
     },
 }

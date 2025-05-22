@@ -3,6 +3,8 @@
 
 #define BOOT_RAM_REGION_MAX 10
 
+#include "types.h"
+
 typedef struct _boot_info_t {
     struct {
         uint32_t start;  // Start address of the RAM region
