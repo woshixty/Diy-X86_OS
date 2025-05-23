@@ -1,6 +1,7 @@
 __asm__(".code16gcc");
 
 #include "loader.h"
+#include "comm/cpu_instr.h"
 
 boot_info_t boot_info;
 
@@ -51,6 +52,11 @@ static void detect_memory(void) {
         }
     }
     show_msg("ok.\n\r");
+}
+
+static void enter_protect_mode(void)
+{
+    cli();
 }
 
 void loader_entry(void) {
