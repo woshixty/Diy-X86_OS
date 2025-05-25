@@ -68,6 +68,11 @@ static void enter_protect_mode(void)
     outb(0x92, v | 0x2);
 
     lgdt((uint32_t)gdt_table, sizeof(gdt_table));
+
+    uint32_t cr0 = read_cr0();
+    write_cr0(cr0 | (1 << 0));
+
+    far_jump(8, (uint32_t)protect_mode_entry);
 }
 
 void loader_entry(void) {
