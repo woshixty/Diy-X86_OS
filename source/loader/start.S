@@ -9,6 +9,13 @@ _start:
 	.code32
 	.text
 	.global protect_mode_entry
+	.extern loader_kernel
 
 protect_mode_entry:
-	jmp .
+	mov $16, %ax
+	mov %ax, %ds
+	mov %ax, %ss
+	mov %ax, %es
+	mov %ax, %fs
+	mov %ax, %gs
+	jmp $8, $loader_kernel
