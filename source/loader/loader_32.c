@@ -16,17 +16,21 @@ static void read_disk(uint32_t sector, uint32_t sector_count, uint8_t* buf) {
 
     outb(0x1F7, (uint8_t) 0x24);
 
-    uint16_t* data_buf = (uint16_t*)buf;
-    while (sector_count--) {
+    // 读取数据
+    uint16_t *data_buf = (uint16_t*) buf;
+    while (sector_count-- > 0) {
+        // 每次扇区读之前都要检查，等待数据就绪
         while ((inb(0x1F7) & 0x88) != 0x8) {}
 
+        // 读取并将数据写入到缓存中
         for (int i = 0; i < SECTOR_SIZE / 2; i++) {
             *data_buf++ = inw(0x1F0);
         }
-    }    
+    } 
 }
 
 void loader_kernel(void) {
     read_disk(100, 500, (uint8_t*)SYS_KERNEL_LOAD_ADDR);
+    ((void (*)(void))SYS_KERNEL_LOAD_ADDR)();
     for (;;) {}
 }
