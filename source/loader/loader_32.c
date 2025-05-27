@@ -38,6 +38,6 @@ void load_kernel(void) {
     // 读取的扇区数一定要大一些，保不准kernel.elf大小会变得很大
     // 我就吃过亏，只读了100个扇区，结果运行后发现kernel的一些初始化的变量值为空，程序也会跑飞
     read_disk(100, 500, (uint8_t *)SYS_KERNEL_LOAD_ADDR);
-    ((void (*)(boot_info_t *))SYS_KERNEL_LOAD_ADDR)(&boot_info);
+    ((void (*)(boot_info_t *))0x10000)(&boot_info);
     for (;;) {}
 }
