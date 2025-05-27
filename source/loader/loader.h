@@ -1,7 +1,9 @@
 #ifndef LOADER_H
 #define LOADER_H
 
+#include "comm/types.h"
 #include "comm/boot_info.h"
+#include "comm/cpu_instr.h"
 
 void protect_mode_entry (void);
 
