@@ -9,6 +9,14 @@ void exceprion_handler_unknown(void);
 
 static gate_desc_t idt_table[IDE_TABLE_NR];
 
+static void do_default_handler(const char* message) {
+    for (;;) {}
+}
+
+void do_handler_unknown(void) {
+    do_default_handler("unknown exception");
+}
+
 void irq_init(void)
 {
     for (int i = 0; i < IDE_TABLE_NR; i++)

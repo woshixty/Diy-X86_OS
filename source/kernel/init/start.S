@@ -37,7 +37,21 @@ gdt_reload:
 .comm stack, KERNEL_STACK_SIZE
 
     .text
+    .extern do_handler_unknown
     .global exceprion_handler_unknown
 exceprion_handler_unknown:
-    iret
+    pusha
+    push %ds
+    push %es
+    push %fs
+    push %gs
+
+    call do_handler_unknown
+
+    pop %gs
+    pop %fs
+    pop %es
+    pop %ds
+    popa
     
+    iret
