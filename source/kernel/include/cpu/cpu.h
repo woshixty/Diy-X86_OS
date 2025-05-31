@@ -22,6 +22,10 @@ typedef struct _gate_desc_t
     uint16_t offset31_16;
 } gate_desc_t;
 
+#define GATE_TYPE_INT       (0xE << 8)
+#define GATE_P_PRESENT      (1 << 15)
+#define GATE_DPL0           (0 << 13)
+#define GATE_DPL3           (3 << 13)
 
 #pragma pack()
 
