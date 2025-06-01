@@ -6,6 +6,10 @@
 
 static uint32_t sys_tick;
 
+void do_handler_time(void) {
+    sys_tick++;
+}
+
 static void init_pit(void) {
     uint32_t reload_count = PIT_OSC_FREQ * OS_TICKS_MS / 1000;
     outb(PIT_COMMAND_MODE_PORT, PIT_CHANNEL | PIT_LOAD_LOHI | PIT_MODE3);

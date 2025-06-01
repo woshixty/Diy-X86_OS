@@ -22,6 +22,8 @@
 #define IRQ19_XM            19
 #define IRQ20_VE            20
 
+#define IRQ0_TIMER          0x20
+
 // PIC控制器相关的寄存器及位配置
 #define PIC0_ICW1			0x20
 #define PIC0_ICW2			0x21
@@ -30,12 +32,12 @@
 #define PIC0_OCW2			0x20
 #define PIC0_IMR			0x21
 
-#define PIC1_ICW1			0xa0
-#define PIC1_ICW2			0xa1
-#define PIC1_ICW3			0xa1
-#define PIC1_ICW4			0xa1
-#define PIC1_OCW2			0xa0
-#define PIC1_IMR			0xa1
+#define PIC1_ICW1			0xA0
+#define PIC1_ICW2			0xA1
+#define PIC1_ICW3			0xA1
+#define PIC1_ICW4			0xA1
+#define PIC1_OCW2			0xA0
+#define PIC1_IMR			0xA1
 
 #define PIC_ICW1_ICW4		(1 << 0)		// 1 - 需要初始化ICW4
 #define PIC_ICW1_ALWAYS_1	(1 << 4)		// 总为1的位
@@ -80,7 +82,7 @@ void exception_handler_virtual_exception (void);
 
 void irq_enable(int irq_num);
 void irq_disable(int irq_num);
-void irq_disable_globle(void);
-void irq_enable_globle(void);
+void irq_disable_global(void);
+void irq_enable_global(void);
 
 #endif

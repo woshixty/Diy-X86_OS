@@ -181,10 +181,10 @@ void irq_disable(int irq_num) {
     }
 }
 
-void irq_disable_globle(void) {
+void irq_disable_global(void) {
     cli();
 }
 
-void irq_enable_globle(void) {
+void irq_enable_global(void) {
     sti();
 }
