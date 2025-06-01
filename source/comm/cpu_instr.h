@@ -56,10 +56,6 @@ static inline void far_jump(uint32_t selector, uint32_t offset) {
 	__asm__ __volatile__("ljmpl *(%[a])"::[a]"r"(addr));
 }
 
-static inline void hlt(void) {
-	__asm__ __volatile__("hlt");
-}
-
 static inline void lidt(uint32_t start, uint32_t size) {
 	struct {
 		uint16_t limit;
@@ -71,7 +67,11 @@ static inline void lidt(uint32_t start, uint32_t size) {
 	idt.start15_0 = start & 0xFFFF;
 	idt.limit = size - 1;
 
-	__asm__ __volatile__("lidt %[g]"::[g]"m"(idt));
+	__asm__ __volatile__("lidt %0"::"m"(idt));
+}
+
+static inline void hlt(void) {
+    __asm__ __volatile__("hlt");
 }
 
 #endif

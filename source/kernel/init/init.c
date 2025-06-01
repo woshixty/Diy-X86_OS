@@ -10,6 +10,7 @@
 void kernel_init (boot_info_t * boot_info) {
     cpu_init();
     irq_init();
+    time_init();
 }
 
 void init_main(void) {
