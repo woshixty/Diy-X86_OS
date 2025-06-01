@@ -90,4 +90,6 @@ void irq_disable(int irq_num);
 void irq_disable_global(void);
 void irq_enable_global(void);
 
+void pic_send_eoi(int irq_num);
+
 #endif

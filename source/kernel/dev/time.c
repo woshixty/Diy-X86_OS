@@ -8,6 +8,8 @@ static uint32_t sys_tick;
 
 void do_handler_time(void) {
     sys_tick++;
+    
+    pic_send_eoi(IRQ0_TIMER);
 }
 
 static void init_pit(void) {
