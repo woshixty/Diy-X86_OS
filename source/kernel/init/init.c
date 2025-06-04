@@ -23,6 +23,5 @@ void init_main(void) {
     // int a = 3 / 0;
     // irq_enable_global();
     
-
     for (;;) {}
 }
