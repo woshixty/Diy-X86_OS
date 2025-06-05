@@ -21,7 +21,8 @@ void init_main(void) {
     log_printf("Kernel is running......");
     log_printf("Version: %s %s", OS_VERSION, "diy x86-os");
     log_printf("%d %d %x %c", 123456, -123, 0x12345, 'a');
-    // int a = 3 / 0;
+    
+    int a = 3 / 0;
     // irq_enable_global();
     
     for (;;) {}
