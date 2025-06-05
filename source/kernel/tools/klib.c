@@ -1,4 +1,7 @@
 #include "tools/klib.h"
+#include "tools/log.h"
+#include "os_cfg.h"
+#include "comm/cpu_instr.h"
 
 void kernel_strcpy(char* dest, const char* src) {
     if(!dest || !src) {
@@ -179,4 +182,10 @@ void kernel_itoa(char* buf, int num, int base) {
         start++;
         p--;
     }   
+}
+
+void pannic(const char* file, int line, const char* func, const char* cond) {
+    log_printf("assert failed: %s", cond);
+    log_printf("file: %s\nline: %d\nfunc: %s", file, line, func);
+    for (;;) { hlt(); }
 }
