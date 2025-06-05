@@ -100,7 +100,7 @@ void kernel_sprintf(char* buf, const char* fmt, ...) {
     va_list args;
 
     va_start(args, fmt);
-    kernel_vsprintf(str_buf, fmt, args);
+    kernel_vsprintf(buf, fmt, args);
     va_end(args);
 }
 
@@ -123,13 +123,16 @@ void kernel_vsprintf(char* buf, const char* fmt, va_list args) {
                 int num = va_arg(args, int);
                 kernel_itoa(curr, num, 10);
                 curr += kernel_strlen(curr);
+                state = NORMAL;
             } else if(ch == 'x') {
                 int num = va_arg(args, int);
                 kernel_itoa(curr, num, 16);
                 curr += kernel_strlen(curr);
-            } else if(ch == 's') {
-                char c = va_arg(args, char);
+                state = NORMAL;
+            } else if(ch == 'c') {
+                char c = va_arg(args, int);
                 *curr++ = c;
+                state = NORMAL;
             } else if(ch == 's') {
                 const char* str = va_arg(args, char*);
                 int len = kernel_strlen(str);
@@ -146,7 +149,9 @@ void kernel_vsprintf(char* buf, const char* fmt, va_list args) {
 }
 
 void kernel_itoa(char* buf, int num, int base) {
-    static const char* num2ch = {"0123456789ABCDEF"};
+    static const char* num2ch = {"FEDCBA9876543210123456789ABCDEF"};
+    char* p = buf;
+    int old_num = num;
 
     if((base != 2) && (base != 8) && (base != 10) && (base != 16)) {
         *p = '\0';
@@ -158,10 +163,20 @@ void kernel_itoa(char* buf, int num, int base) {
     }
     
     do {
-        char ch = num2ch(num % base);
+        int index = num % base;
+        char ch = num2ch[index + 15];
         *p++ = ch;
         num /= base;
     } while (num);
+    *p-- = '\0';
     
-    *p = '\0';
+    char* start = (old_num > 0) ? buf : buf + 1;
+    while (start < p) {
+        char ch = *start;
+        *start = *p;
+        *p = ch;
+
+        start++;
+        p--;
+    }   
 }

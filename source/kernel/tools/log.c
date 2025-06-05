@@ -17,7 +17,7 @@ void log_init(void) {
 }
 
 void log_printf(const char* fmt, ...) {
-    char* str_buf[128];
+    char str_buf[128];
     va_list args;
 
     kernel_memset(str_buf, '\0', sizeof(str_buf));
@@ -25,7 +25,7 @@ void log_printf(const char* fmt, ...) {
     kernel_vsprintf(str_buf, fmt, args);
     va_end(args);
 
-    const char* p = str_buf;
+    char* p = str_buf;
     while (*p != '\0') {
         while ((inb(COM1_PORT + 5) & (1 << 6)) == 0) {}
         outb(COM1_PORT, *p++);
