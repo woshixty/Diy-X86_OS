@@ -21,7 +21,7 @@ void kernel_init (boot_info_t * boot_info) {
 void init_task_entry(void) {
     int count = 0;
     for (;;) {
-        log_printf("int main: %d", count++);
+        log_printf("int task: %d", count++);
     }
 }
 
@@ -34,6 +34,6 @@ void init_main(void) {
     for (;;) {
         log_printf("int main: %d", count++);
     }
-    
+
     init_task_entry();
 }

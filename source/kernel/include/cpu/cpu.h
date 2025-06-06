@@ -18,11 +18,6 @@
 
 #define SEG_TYPE_RW			(1 << 1)		// 是否可写可读，不设置为只读
 
-#define GATE_TYPE_IDT		(0xE << 8)		// 中断32位门描述符
-#define GATE_P_PRESENT		(1 << 15)		// 是否存在
-#define GATE_DPL0			(0 << 13)		// 特权级0，最高特权级
-#define GATE_DPL3			(3 << 13)		// 特权级3，最低权限
-
 #pragma pack(1)
 
 /**
@@ -45,6 +40,22 @@ typedef struct _gate_desc_t {
 	uint16_t attr;
 	uint16_t offset31_16;
 }gate_desc_t;
+
+#define GATE_TYPE_IDT		(0xE << 8)		// 中断32位门描述符
+#define GATE_P_PRESENT		(1 << 15)		// 是否存在
+#define GATE_DPL0			(0 << 13)		// 特权级0，最高特权级
+#define GATE_DPL3			(3 << 13)		// 特权级3，最低权限
+
+typedef struct _tss_t_ {
+	uint32_t pre_link;
+	uint16_t esp0, ss0, esp1, ss1, esp2, ss2;
+	uint32_t cr3;
+	uint32_t eip, eflags, eax, ecx, edx, ebx, esp, ebp, esi, edi;
+	uint32_t es, cs, ss, ds, fs, gs;
+	uint32_t ldt;
+	uint32_t iomap;
+};
+
 
 #pragma pack()
 
