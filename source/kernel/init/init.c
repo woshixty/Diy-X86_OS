@@ -11,7 +11,6 @@
  * 内核入口
  */
 void kernel_init (boot_info_t * boot_info) {
-    ASSERT(boot_info->ram_region_count != 0);
     cpu_init();
 
     log_init();
@@ -19,13 +18,22 @@ void kernel_init (boot_info_t * boot_info) {
     time_init();
 }
 
+void init_task_entry(void) {
+    int count = 0;
+    for (;;) {
+        log_printf("int main: %d", count++);
+    }
+}
+
 void init_main(void) {
     log_printf("Kernel is running......");
     log_printf("Version: %s %s", OS_VERSION, "diy x86-os");
     log_printf("%d %d %x %c", 123456, -123, 0x12345, 'a');
     
-    int a = 3 / 0;
-    // irq_enable_global();
+    int count = 0;
+    for (;;) {
+        log_printf("int main: %d", count++);
+    }
     
-    for (;;) {}
+    init_task_entry();
 }
