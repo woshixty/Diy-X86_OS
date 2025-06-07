@@ -46,7 +46,7 @@ typedef struct _gate_desc_t {
 #define GATE_DPL0			(0 << 13)		// 特权级0，最高特权级
 #define GATE_DPL3			(3 << 13)		// 特权级3，最低权限
 
-typedef struct _tss_t_ {
+typedef struct _tss_t {
 	uint32_t pre_link;
 	uint16_t esp0, ss0, esp1, ss1, esp2, ss2;
 	uint32_t cr3;
@@ -54,8 +54,7 @@ typedef struct _tss_t_ {
 	uint32_t es, cs, ss, ds, fs, gs;
 	uint32_t ldt;
 	uint32_t iomap;
-};
-
+} tss_t;
 
 #pragma pack()
 
