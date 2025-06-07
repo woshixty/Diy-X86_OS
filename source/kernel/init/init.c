@@ -20,6 +20,7 @@ void kernel_init (boot_info_t * boot_info) {
 }
 
 static task_t first_task;
+static uint32_t init_task_stack[1024];
 static task_t init_task;
 
 void init_task_entry(void) {
@@ -34,7 +35,7 @@ void init_main(void) {
     log_printf("Version: %s %s", OS_VERSION, "diy x86-os");
     log_printf("%d %d %x %c", 123456, -123, 0x12345, 'a');
     
-    task_init(&init_task, (uint32_t)init_task_entry, 0);
+    task_init(&init_task, (uint32_t)init_task_entry, (uint32_t)&init_task_stack[1024]);
     task_init(&first_task, 0, 0);
     int count = 0;
     for (;;) {

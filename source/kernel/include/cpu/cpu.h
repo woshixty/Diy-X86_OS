@@ -18,6 +18,9 @@
 
 #define SEG_TYPE_RW			(1 << 1)		// 是否可写可读，不设置为只读
 
+#define EFLAGS_DEFAULT		(1 << 1)
+#define EFLAGS_IF			(1 << 9)
+
 #pragma pack(1)
 
 /**
