@@ -107,46 +107,42 @@ void kernel_sprintf(char* buf, const char* fmt, ...) {
     va_end(args);
 }
 
-void kernel_vsprintf(char* buf, const char* fmt, va_list args) {
+void kernel_vsprintf(char * buffer, const char * fmt, va_list args) {
     enum {NORMAL, READ_FMT} state = NORMAL;
-    char* curr = buf;
     char ch;
+    char * curr = buffer;
     while ((ch = *fmt++)) {
-        switch (state)
-        {
-        case NORMAL:
-            if(ch == '%') {
-                state = READ_FMT;
-            } else {
-                *curr++ = ch;
-            }
-            break;
-        case READ_FMT:
-            if(ch == 'd') {
-                int num = va_arg(args, int);
-                kernel_itoa(curr, num, 10);
-                curr += kernel_strlen(curr);
-                state = NORMAL;
-            } else if(ch == 'x') {
-                int num = va_arg(args, int);
-                kernel_itoa(curr, num, 16);
-                curr += kernel_strlen(curr);
-                state = NORMAL;
-            } else if(ch == 'c') {
-                char c = va_arg(args, int);
-                *curr++ = c;
-                state = NORMAL;
-            } else if(ch == 's') {
-                const char* str = va_arg(args, char*);
-                int len = kernel_strlen(str);
-                while (len--) {
-                    *curr++ = *str++;
+        switch (state) {
+            // 普通字符
+            case NORMAL:
+                if (ch == '%') {
+                    state = READ_FMT;
+                } else {
+                    *curr++ = ch;
+                }
+                break;
+            // 格式化控制字符，只支持部分
+            case READ_FMT:
+                if (ch == 'd') {
+                    int num = va_arg(args, int);
+                    kernel_itoa(curr, num, 10);
+                    curr += kernel_strlen(curr);
+                } else if (ch == 'x') {
+                    int num = va_arg(args, int);
+                    kernel_itoa(curr, num, 16);
+                    curr += kernel_strlen(curr);
+                } else if (ch == 'c') {
+                    char c = va_arg(args, int);
+                    *curr++ = c;
+                } else if (ch == 's') {
+                    const char * str = va_arg(args, char *);
+                    int len = kernel_strlen(str);
+                    while (len--) {
+                        *curr++ = *str++;
+                    }
                 }
                 state = NORMAL;
-            }
-            break;
-        default:
-            break;
+                break;
         }
     }
 }
