@@ -8,6 +8,8 @@
  * @brief 任务控制块结构
  */
 typedef struct _task_t {
+	uint32_t* stack;
+
 	tss_t tss;				// 任务的TSS段
 	uint16_t tss_sel;		// tss选择子
 }task_t;
