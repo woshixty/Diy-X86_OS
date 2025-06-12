@@ -26,3 +26,5 @@ protect_mode_entry:
 
     // 长跳转进入到32位内核加载模式中
     jmp $8, $load_kernel
+
+

@@ -1,3 +1,4 @@
+// 16位代码，必须加上放在开头，以便有些io指令生成为32位
 __asm__(".code16gcc");
 
 #include "loader.h"
@@ -101,3 +102,5 @@ void loader_entry(void) {
     enter_protect_mode();
     for(;;) {}
 }
+
+

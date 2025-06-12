@@ -1,9 +1,8 @@
 # 顶层cmakelist文件，以下的设置将被子工程所继承使用
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.10.0)
 
 # 保存一些通用的配置
-set(CMAKE_VERBOSE_MAKEFILE ON)   # 开启输出编译详细过程的提示
-set(CMAKE_COLOR_MAKEFILE OFF)
+set(CMAKE_VERBOSE_MAKEFILE on)   # 开启输出编译详细过程的提示
 
 # gcc工具链前缀，根据实际情况做不同的设置
 # 目前mac和win上使用x86_64-elf-
@@ -40,7 +39,7 @@ enable_language(ASM)
 # 头文件搜索路径
 include_directories(
     ${PROJECT_SOURCE_DIR}/source
-    ${PROJECT_SOURCE_DIR}/source/kernel/include
+     ${PROJECT_SOURCE_DIR}/source/kernel/include
 #     ${PROJECT_SOURCE_DIR}/../newlib/i686-elf/include
 )
 

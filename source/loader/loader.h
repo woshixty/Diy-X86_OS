@@ -20,4 +20,4 @@ typedef struct SMAP_entry {
 
 extern boot_info_t boot_info;
 
-#endif
+#endif // LOADER_H
