@@ -1,63 +1,66 @@
 #include "tools/klib.h"
 #include "tools/log.h"
-#include "os_cfg.h"
 #include "comm/cpu_instr.h"
 
-void kernel_strcpy(char* dest, const char* src) {
-    if(!dest || !src) {
+void kernel_strcpy (char * dest, const char * src) {
+    if (!dest || !src) {
         return;
     }
 
     while (*dest && *src) {
         *dest++ = *src++;
     }
-
     *dest = '\0';
 }
 
-void kernel_strncpy(char* dest, const char* src, int size) {
-    if(!dest || !src || !size) {
+void kernel_strncpy(char * dest, const char * src, int size) {
+    if (!dest || !src || !size) {
         return;
     }
 
-    char* d = dest;
-    const char* s = src;
+    char * d = dest;
+    const char * s = src;
+
     while ((size-- > 0) && (*s)) {
         *d++ = *s++;
     }
-
-    if(size == 0) {
+    if (size == 0) {
         *(d - 1) = '\0';
     } else {
         *d = '\0';
     }
 }
 
-int kernel_strncmp(const char* s1, const char* s2, int size) {
-    if(!s1 || !s2) {
+int kernel_strlen(const char * str) {
+    if (str == (const char *)0) {
+        return 0;
+    }
+
+	const char * c = str;
+
+	int len = 0;
+	while (*c++) {
+		len++;
+	}
+
+	return len;
+}
+
+/**
+ * 比较两个字符串，最多比较size个字符
+ * 如果某一字符串提前比较完成，也算相同
+ */
+int kernel_strncmp (const char * s1, const char * s2, int size) {
+    if (!s1 || !s2) {
         return -1;
     }
 
     while (*s1 && *s2 && (*s1 == *s2) && size) {
-        s1++;
-        s2++;
+    	s1++;
+    	s2++;
     }
-    
+
     return !((*s1 == '\0') || (*s2 == '\0') || (*s1 == *s2));
-}
-
-int kernel_strlen(const char* str) {
-    if(!str) {
-        return 0;
-    }
-
-    const char* c = str;
-    int len = 0;
-    while (*c++) {
-        len++;
-    }
-    return len;
-    
 }
 
 void kernel_memcpy (void * dest, void * src, int size) {
@@ -97,54 +100,6 @@ int kernel_memcmp (void * d1, void * d2, int size) {
 	}
 
 	return 0;
-}
-
-void kernel_sprintf(char* buf, const char* fmt, ...) {
-    va_list args;
-
-    va_start(args, fmt);
-    kernel_vsprintf(buf, fmt, args);
-    va_end(args);
-}
-
-void kernel_vsprintf(char * buffer, const char * fmt, va_list args) {
-    enum {NORMAL, READ_FMT} state = NORMAL;
-    char ch;
-    char * curr = buffer;
-    while ((ch = *fmt++)) {
-        switch (state) {
-            // 普通字符
-            case NORMAL:
-                if (ch == '%') {
-                    state = READ_FMT;
-                } else {
-                    *curr++ = ch;
-                }
-                break;
-            // 格式化控制字符，只支持部分
-            case READ_FMT:
-                if (ch == 'd') {
-                    int num = va_arg(args, int);
-                    kernel_itoa(curr, num, 10);
-                    curr += kernel_strlen(curr);
-                } else if (ch == 'x') {
-                    int num = va_arg(args, int);
-                    kernel_itoa(curr, num, 16);
-                    curr += kernel_strlen(curr);
-                } else if (ch == 'c') {
-                    char c = va_arg(args, int);
-                    *curr++ = c;
-                } else if (ch == 's') {
-                    const char * str = va_arg(args, char *);
-                    int len = kernel_strlen(str);
-                    while (len--) {
-                        *curr++ = *str++;
-                    }
-                }
-                state = NORMAL;
-                break;
-        }
-    }
 }
 
 void kernel_itoa(char * buf, int num, int base) {
@@ -192,8 +147,65 @@ void kernel_itoa(char * buf, int num, int base) {
     }
 }
 
-void pannic(const char* file, int line, const char* func, const char* cond) {
-    log_printf("assert failed: %s", cond);
-    log_printf("file: %s\nline: %d\nfunc: %s", file, line, func);
-    for (;;) { hlt(); }
+/**
+ * @brief 格式化字符串到缓存中
+ */
+void kernel_sprintf(char * buffer, const char * fmt, ...) {
+    va_list args;
+
+    va_start(args, fmt);
+    kernel_vsprintf(buffer, fmt, args);
+    va_end(args);
+}
+
+/**
+ * 格式化字符串
+ */
+void kernel_vsprintf(char * buffer, const char * fmt, va_list args) {
+    enum {NORMAL, READ_FMT} state = NORMAL;
+    char ch;
+    char * curr = buffer;
+    while ((ch = *fmt++)) {
+        switch (state) {
+            // 普通字符
+            case NORMAL:
+                if (ch == '%') {
+                    state = READ_FMT;
+                } else {
+                    *curr++ = ch;
+                }
+                break;
+            // 格式化控制字符，只支持部分
+            case READ_FMT:
+                if (ch == 'd') {
+                    int num = va_arg(args, int);
+                    kernel_itoa(curr, num, 10);
+                    curr += kernel_strlen(curr);
+                } else if (ch == 'x') {
+                    int num = va_arg(args, int);
+                    kernel_itoa(curr, num, 16);
+                    curr += kernel_strlen(curr);
+                } else if (ch == 'c') {
+                    char c = va_arg(args, int);
+                    *curr++ = c;
+                } else if (ch == 's') {
+                    const char * str = va_arg(args, char *);
+                    int len = kernel_strlen(str);
+                    while (len--) {
+                        *curr++ = *str++;
+                    }
+                }
+                state = NORMAL;
+                break;
+        }
+    }
+}
+
+void panic (const char * file, int line, const char * func, const char * cond) {
+    log_printf("assert failed! %s", cond);
+    log_printf("file: %s\nline %d\nfunc: %s\n", file, line, func);
+
+    for (;;) {
+        hlt();
+    }
 }

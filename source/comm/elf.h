@@ -1,15 +1,18 @@
-#ifndef ELF_H
-#define ELF_H
+#ifndef OS_ELF_H
+#define OS_ELF_H
 
 #include "types.h"
 
+// ELF相关数据类型
 typedef uint32_t Elf32_Addr;
 typedef uint16_t Elf32_Half;
-typedef uint32_t Elf32_Word;
 typedef uint32_t Elf32_Off;
+typedef uint32_t Elf32_Sword;
+typedef uint32_t Elf32_Word;
 
 #pragma pack(1)
 
+// ELF Header
 #define EI_NIDENT       16
 #define ELF_MAGIC       0x7F
 

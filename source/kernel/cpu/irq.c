@@ -1,16 +1,15 @@
-#include "comm/cpu_instr.h"
 #include "cpu/irq.h"
 #include "cpu/cpu.h"
-#include "os_cfg.h"
+#include "comm/cpu_instr.h"
 #include "tools/log.h"
+#include "os_cfg.h"
 
-#define IDT_TABLE_NR        128
+#define IDT_TABLE_NR			128				// IDT表项数量
 
-void exception_handler_unknown(void);
-
-static gate_desc_t idt_table[IDT_TABLE_NR];
+static gate_desc_t idt_table[IDT_TABLE_NR];	// 中断描述表
 
 static void dump_core_regs (exception_frame_t * frame) {
+    // 打印CPU寄存器相关内容
     log_printf("IRQ: %d, error code: %d.", frame->num, frame->error_code);
     log_printf("CS: %d\nDS: %d\nES: %d\nSS: %d\nFS:%d\nGS:%d",
                frame->cs, frame->ds, frame->es, frame->ds, frame->fs, frame->gs
@@ -23,27 +22,30 @@ static void dump_core_regs (exception_frame_t * frame) {
                 "ESI:0x%x\n"
                 "EBP:0x%x\n"
                 "ESP:0x%x\n",
-                frame->eax, frame->ebx, frame->ecx, frame->edx,
-                frame->edi, frame->esi, frame->ebp, frame->esp);
+               frame->eax, frame->ebx, frame->ecx, frame->edx,
+               frame->edi, frame->esi, frame->ebp, frame->esp);
     log_printf("EIP:0x%x\nEFLAGS:0x%x\n", frame->eip, frame->eflags);
 }
 
-static void do_default_handler(exception_frame_t* frame, const char* message) {
-    log_printf("--------------------------------------------------");
-    log_printf("IRQ/Exception happend: %s", message);
+static void do_default_handler (exception_frame_t * frame, const char * message) {
+    log_printf("--------------------------------");
+    log_printf("IRQ/Exception happend: %s.", message);
     dump_core_regs(frame);
     
+    // todo: 留等以后补充打印任务栈的内容
+
+    log_printf("--------------------------------");
     for (;;) {
         hlt();
     }
 }
 
-void do_handler_unknown(exception_frame_t* frame) {
-    do_default_handler(frame, "unknown exception");
+void do_handler_unknown (exception_frame_t * frame) {
+	do_default_handler(frame, "Unknown exception.");
 }
 
-void do_handler_divider(exception_frame_t* frame) {
-    do_default_handler(frame, "Divider exception");
+void do_handler_divider(exception_frame_t * frame) {
+	do_default_handler(frame, "Divider Error.");
 }
 
 void do_handler_Debug(exception_frame_t * frame) {
@@ -148,43 +150,64 @@ static void init_pic(void) {
     outb(PIC1_IMR, 0xFF);
 }
 
-void irq_init(void)
-{
-    for (int i = 0; i < IDT_TABLE_NR; i++) {
-        gate_desc_set(idt_table + i, KERNEL_SELECTOR_CS, (uint32_t)exception_handler_unknown, GATE_P_PRESENT | GATE_DPL0 | GATE_TYPE_IDT);
+void pic_send_eoi(int irq_num) {
+    irq_num -= IRQ_PIC_START;
+
+    // 从片也可能需要发送EOI
+    if (irq_num >= 8) {
+        outb(PIC1_OCW2, PIC_OCW2_EOI);
     }
 
-    irq_install(IRQ0_DE, (irq_handler_t)exception_handler_divider);
-	irq_install(IRQ1_DB, (irq_handler_t)exception_handler_Debug);
-	irq_install(IRQ2_NMI, (irq_handler_t)exception_handler_NMI);
-	irq_install(IRQ3_BP, (irq_handler_t)exception_handler_breakpoint);
-	irq_install(IRQ4_OF, (irq_handler_t)exception_handler_overflow);
-	irq_install(IRQ5_BR, (irq_handler_t)exception_handler_bound_range);
-	irq_install(IRQ6_UD, (irq_handler_t)exception_handler_invalid_opcode);
-	irq_install(IRQ7_NM, (irq_handler_t)exception_handler_device_unavailable);
-	irq_install(IRQ8_DF, (irq_handler_t)exception_handler_double_fault);
-	irq_install(IRQ10_TS, (irq_handler_t)exception_handler_invalid_tss);
-	irq_install(IRQ11_NP, (irq_handler_t)exception_handler_segment_not_present);
-	irq_install(IRQ12_SS, (irq_handler_t)exception_handler_stack_segment_fault);
-	irq_install(IRQ13_GP, (irq_handler_t)exception_handler_general_protection);
-	irq_install(IRQ14_PF, (irq_handler_t)exception_handler_page_fault);
-	irq_install(IRQ16_MF, (irq_handler_t)exception_handler_fpu_error);
-	irq_install(IRQ17_AC, (irq_handler_t)exception_handler_alignment_check);
-	irq_install(IRQ18_MC, (irq_handler_t)exception_handler_machine_check);
-	irq_install(IRQ19_XM, (irq_handler_t)exception_handler_smd_exception);
-	irq_install(IRQ20_VE, (irq_handler_t)exception_handler_virtual_exception);
-    
-    lidt((uint32_t)idt_table, sizeof(idt_table));
-
-    init_pic();
+    outb(PIC0_OCW2, PIC_OCW2_EOI);
 }
 
+/**
+ * @brief 中断和异常初始化
+ */
+void irq_init(void) {
+	for (uint32_t i = 0; i < IDT_TABLE_NR; i++) {
+    	gate_desc_set(idt_table + i, KERNEL_SELECTOR_CS, (uint32_t) exception_handler_unknown,
+                  GATE_P_PRESENT | GATE_DPL0 | GATE_TYPE_IDT);
+	}
+
+	// 设置异常处理接口
+    irq_install(IRQ0_DE, exception_handler_divider);
+	irq_install(IRQ1_DB, exception_handler_Debug);
+	irq_install(IRQ2_NMI, exception_handler_NMI);
+	irq_install(IRQ3_BP, exception_handler_breakpoint);
+	irq_install(IRQ4_OF, exception_handler_overflow);
+	irq_install(IRQ5_BR, exception_handler_bound_range);
+	irq_install(IRQ6_UD, exception_handler_invalid_opcode);
+	irq_install(IRQ7_NM, exception_handler_device_unavailable);
+	irq_install(IRQ8_DF, exception_handler_double_fault);
+	irq_install(IRQ10_TS, exception_handler_invalid_tss);
+	irq_install(IRQ11_NP, exception_handler_segment_not_present);
+	irq_install(IRQ12_SS, exception_handler_stack_segment_fault);
+	irq_install(IRQ13_GP, exception_handler_general_protection);
+	irq_install(IRQ14_PF, exception_handler_page_fault);
+	irq_install(IRQ16_MF, exception_handler_fpu_error);
+	irq_install(IRQ17_AC, exception_handler_alignment_check);
+	irq_install(IRQ18_MC, exception_handler_machine_check);
+	irq_install(IRQ19_XM, exception_handler_smd_exception);
+	irq_install(IRQ20_VE, exception_handler_virtual_exception);
+
+
+	lidt((uint32_t)idt_table, sizeof(idt_table));
+
+	// 初始化pic 控制器
+	init_pic();
+}
+
+/**
+ * @brief 安装中断或异常处理程序
+ */
 int irq_install(int irq_num, irq_handler_t handler) {
 	if (irq_num >= IDT_TABLE_NR) {
 		return -1;
 	}
 
-    gate_desc_set(idt_table + irq_num, KERNEL_SELECTOR_CS, (uint32_t)handler, GATE_P_PRESENT | GATE_DPL0 | GATE_TYPE_IDT);
+    gate_desc_set(idt_table + irq_num, KERNEL_SELECTOR_CS, (uint32_t) handler,
+                  GATE_P_PRESENT | GATE_DPL0 | GATE_TYPE_IDT);
 	return 0;
 }
 
@@ -226,12 +249,4 @@ void irq_disable_global(void) {
 
 void irq_enable_global(void) {
     sti();
-}
-
-void pic_send_eoi(int irq_num) {
-    irq_num -= IRQ_PIC_START;
-    if(irq_num >= 8) {
-        outb(PIC1_OCW2, PIC_OCW2_EOI);
-    }
-    outb(PIC0_OCW2, PIC_OCW2_EOI);
 }
