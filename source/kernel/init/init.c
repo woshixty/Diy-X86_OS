@@ -7,6 +7,7 @@
 #include "core/task.h"
 #include "os_cfg.h"
 #include "tools/klib.h"
+#include "tools/list.h"
 
 static boot_info_t * init_boot_info;        // 启动信息
 
@@ -42,6 +43,9 @@ void init_task_entry(void) {
 }
 
 void list_test (void) {
+    list_t list;
+
+    list_init(&list);
 }
 
 void init_main(void) {
