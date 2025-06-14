@@ -44,9 +44,26 @@ void init_task_entry(void) {
 
 void list_test (void) {
     list_t list;
+    list_node_t nodes[5];
 
     list_init(&list);
 
+    for (int i = 0; i < 5; i++) {
+        list_node_t* node = nodes + i;
+
+        log_printf("insert first to list: %d, 0x%x", i, (uint32_t)node);
+        list_insert_first(&list, node);
+    }
+    log_printf("list: first=0x%x, last=0x%x, count=%d",
+        list_first(&list), list_last(&list), list_count(&list));
+
+    list_init(&list);
+    for (int i = 0; i < 5; i++) {
+        list_node_t* node = nodes + i;
+
+        log_printf("insert last to list: %d, 0x%x", i, (uint32_t)node);
+        list_insert_last(&list, node);
+    }
     log_printf("list: first=0x%x, last=0x%x, count=%d",
         list_first(&list), list_last(&list), list_count(&list));
 }
