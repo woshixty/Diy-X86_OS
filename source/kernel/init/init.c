@@ -52,6 +52,7 @@ void init_main(void) {
     task_init(&init_task, "init task", (uint32_t)init_task_entry, (uint32_t)&init_task_stack[1024]);
     task_first_init();
 
+    irq_enable_global();
     int count = 0;
     for (;;) {
         log_printf("first task: %d", count++);
