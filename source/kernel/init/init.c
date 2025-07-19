@@ -39,7 +39,7 @@ void init_task_entry(void) {
 
     for (;;) {
         log_printf("init task: %d", count++);
-        sys_sched_yield();
+        // sys_sched_yield();
     }
 }
 
@@ -56,6 +56,6 @@ void init_main(void) {
     int count = 0;
     for (;;) {
         log_printf("first task: %d", count++);
-        sys_sched_yield();
+        // sys_sched_yield();
     }
 }
