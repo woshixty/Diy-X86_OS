@@ -38,7 +38,8 @@ void init_task_entry(void) {
     int count = 0;
 
     for (;;) {
-        // log_printf("init task: %d", count++);
+        log_printf("init task: %d", count++);
+        sys_sleep(500);
         // sys_sched_yield();
     }
 }
