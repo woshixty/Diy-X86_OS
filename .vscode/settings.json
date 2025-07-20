@@ -19,6 +19,7 @@
         "os_cfg.h": "c",
         "log.h": "c",
         "klib.h": "c",
-        "list.h": "c"
+        "list.h": "c",
+        "sem.h": "c"
     },
 }
