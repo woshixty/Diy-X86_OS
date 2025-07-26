@@ -34,8 +34,8 @@ void mutex_unlock(mutex_t* mutex) {
             mutex->owner = (task_t*)0;
 
             if(list_count(&mutex->wait_list)) {
-                list_node_t node = list_remove_first(&mutex->wait_list);
-                task_t* task = list_node_parent(task_node, task_t, wait_node);
+                list_node_t* node = list_remove_first(&mutex->wait_list);
+                task_t* task = list_node_parent(node, task_t, wait_node);
                 task_set_ready(task);
 
                 mutex->locked_count = 1;
