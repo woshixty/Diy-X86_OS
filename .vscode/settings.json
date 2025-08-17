@@ -22,6 +22,7 @@
         "list.h": "c",
         "sem.h": "c",
         "mutex.h": "c",
-        "bitmap.h": "c"
+        "bitmap.h": "c",
+        "memory.h": "c"
     },
 }

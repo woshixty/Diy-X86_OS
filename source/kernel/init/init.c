@@ -9,6 +9,7 @@
 #include "tools/klib.h"
 #include "tools/list.h"
 #include "ipc/sem.h"
+#include "core/memory.h"
 
 static boot_info_t * init_boot_info;        // 启动信息
 
@@ -21,6 +22,7 @@ void kernel_init (boot_info_t * boot_info) {
     // 初始化CPU，再重新加载
     cpu_init();
 
+    memory_init();
     log_init();
     irq_init();
     time_init();
