@@ -22,7 +22,7 @@ void kernel_init (boot_info_t * boot_info) {
     // 初始化CPU，再重新加载
     cpu_init();
 
-    memory_init();
+    memory_init(init_boot_info);
     log_init();
     irq_init();
     time_init();
