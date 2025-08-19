@@ -30,19 +30,31 @@ static void addr_free_page(addr_alloc_t* alloc, uint32_t addr, int page_count) {
     mutex_unlock(&alloc->mutex);
 }
 
+void show_mem_info(boot_info_t* boot_info) {
+    log_printf("memory info:");
+    for (int i = 0; i < boot_info->ram_region_count; i++) {
+        log_printf("ram region %d: 0x%x, size: 0x%x\n", 
+            i, 
+            boot_info->ram_region_cfg[i].start, 
+            boot_info->ram_region_cfg[i].size
+        );
+        log_printf("\n");
+    }
+}
+
+static uint32_t total_mem_size(boot_info_t* boot_info) {
+    uint32_t total = 0;
+    for (int i = 0; i < boot_info->ram_region_count; i++) {
+        total += boot_info->ram_region_cfg[i].size;
+    }
+    return total;
+}
+
 void memory_init(boot_info_t* boot_info) {
-    addr_alloc_t addr_alloc;
-    uint8_t bits[8];
+    log_printf("memory init start\n");
 
-    addr_alloc_init(&addr_alloc, bits, 0x1000, 64*4096, 4096);
-    for (int i = 0; i < 32; i++) {
-        uint32_t addr = addr_alloc_page(&addr_alloc, 2);
-        log_printf("alloc addr: 0x%x\n", addr);
-    }
+    show_mem_info(boot_info);
 
-    uint32_t addr = 0x1000;
-    for (int i = 0; i < 32; i++) {
-        addr_free_page(&addr_alloc, addr, 2);
-        addr += 8192;
-    }
+    uint32_t mem_up1MB_free = total_mem_size(boot_info) - MEM_EXT_START;
+    mem_up1MB_free = downs(mem_up1MB_free, MEM_PAGE_SIZE);
 }
