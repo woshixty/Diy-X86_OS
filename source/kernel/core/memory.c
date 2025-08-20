@@ -1,6 +1,9 @@
 #include "core/memory.h"
 
 #include "tools/log.h"
+#include "tools/klib.h"
+
+static addr_alloc_t paddr_alloc;
 
 static void addr_alloc_init (addr_alloc_t * alloc, uint8_t * bits, uint32_t start, uint32_t size, uint32_t page_size) {
     mutex_init(&alloc->mutex);
@@ -51,10 +54,20 @@ static uint32_t total_mem_size(boot_info_t* boot_info) {
 }
 
 void memory_init(boot_info_t* boot_info) {
+    extern uint8_t * mem_free_start;
+
     log_printf("memory init start\n");
 
     show_mem_info(boot_info);
 
+    uint8_t* mem_free = (uint8_t *)&mem_free_start;
+
     uint32_t mem_up1MB_free = total_mem_size(boot_info) - MEM_EXT_START;
-    mem_up1MB_free = downs(mem_up1MB_free, MEM_PAGE_SIZE);
+    mem_up1MB_free = down2(mem_up1MB_free, MEM_PAGE_SIZE);
+    log_printf("free memory: 0x%x, size: 0x%x\n", MEM_EXT_START, mem_up1MB_free);
+
+    addr_alloc_init(&paddr_alloc, mem_free, MEM_EXT_START, mem_up1MB_free, MEM_PAGE_SIZE);
+    mem_free += bitmap_byte_count(paddr_alloc.size / MEM_PAGE_SIZE);
+
+    ASSERT(mem_free < (uint8_t*) MEM_EBDA_START);
 }
