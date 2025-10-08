@@ -53,6 +53,26 @@ static uint32_t total_mem_size(boot_info_t* boot_info) {
     return total;
 }
 
+void create_kernel_table(void) {
+    extern uint8_t s_text[], e_text[], s_data[], e_data[];
+    extern uint8_t kernel_base[];
+
+    static memory_map_t kernel_map[] = {
+        {kernel_base,   s_text,                         kernel_base,    0},     // 内核栈区
+        {s_text,        e_text,                         s_text, 0},         // 内核代码区
+        {s_data,        (void *)(MEM_EBDA_START),   s_data, 0},     // 内核数据区
+    };
+
+    for (int i = 0; i < sizeof(kernel_map) / sizeof(memory_map_t); i++) {
+        memory_map_t * map = kernel_map + i;
+        
+        uint32_t vstart = down2((uint32_t)map->vstart, MEM_PAGE_SIZE);
+        uint32_t vend = up2((uint32_t)map->vend, MEM_PAGE_SIZE);
+        int page_count = (vend - vstart) / MEM_PAGE_SIZE;
+    }
+    
+}
+
 void memory_init(boot_info_t* boot_info) {
     extern uint8_t * mem_free_start;
 
@@ -70,4 +90,6 @@ void memory_init(boot_info_t* boot_info) {
     mem_free += bitmap_byte_count(paddr_alloc.size / MEM_PAGE_SIZE);
 
     ASSERT(mem_free < (uint8_t*) MEM_EBDA_START);
+
+    create_kernel_table();
 }

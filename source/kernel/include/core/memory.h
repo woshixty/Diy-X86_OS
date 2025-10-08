@@ -17,7 +17,17 @@ typedef struct _addr_alloc_t {
     uint32_t start;
     uint32_t size;
     uint32_t page_size;
-}addr_alloc_t;
+} addr_alloc_t;
+
+/**
+ * @brief 虚拟地址到物理地址之间的映射关系表
+ */
+typedef struct _memory_map_t {
+    void * vstart;      // 虚拟地址
+    void * vend;
+    void * pstart;      // 物理地址
+    uint32_t perm;      // 访问权限
+} memory_map_t;
 
 void memory_init(boot_info_t* boot_info);
 
