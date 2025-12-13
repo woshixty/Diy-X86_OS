@@ -60,7 +60,7 @@ void create_kernel_table(void) {
     static memory_map_t kernel_map[] = {
         {kernel_base,   s_text,                         kernel_base,    0},     // 内核栈区
         {s_text,        e_text,                         s_text, 0},         // 内核代码区
-        {s_data,        (void *)(MEM_EBDA_START),   s_data, 0},     // 内核数据区
+        {s_data,        (void *)(MEM_EBDA_START),       s_data, 0},     // 内核数据区
     };
 
     for (int i = 0; i < sizeof(kernel_map) / sizeof(memory_map_t); i++) {

@@ -36,8 +36,18 @@
                     "ignoreFailures": true
                 },
                 {
+                    "description": "定义查看CR4的自定义命令",
+                    "text": "-gdb-set print pretty on",
+                    "ignoreFailures": true
+                },
+                {
                     "description": "将反汇编风格设置为 Intel",
                     "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "设置显示寄存器格式",
+                    "text": "-gdb-set print address on",
                     "ignoreFailures": true
                 },
                 // 设置体系结构: i8086，方便以16位方式进行反汇编
