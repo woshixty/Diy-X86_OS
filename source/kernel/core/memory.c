@@ -56,6 +56,10 @@ static uint32_t total_mem_size(boot_info_t* boot_info) {
     return total;
 }
 
+int memory_create_map(pde_t* page_dir, uint32_t vaddr, uint32_t paddr, int count, uint32_t perm) {
+    
+}
+
 void create_kernel_table(void) {
     extern uint8_t s_text[], e_text[], s_data[], e_data[];
     extern uint8_t kernel_base[];
@@ -72,6 +76,8 @@ void create_kernel_table(void) {
         uint32_t vstart = down2((uint32_t)map->vstart, MEM_PAGE_SIZE);
         uint32_t vend = up2((uint32_t)map->vend, MEM_PAGE_SIZE);
         int page_count = (vend - vstart) / MEM_PAGE_SIZE;
+
+        memory_create_map(kernel_page_dir, vstart, (uint32_t)map->pstart, page_count, map->perm);
     }
     
 }
@@ -95,4 +101,5 @@ void memory_init(boot_info_t* boot_info) {
     ASSERT(mem_free < (uint8_t*) MEM_EBDA_START);
 
     create_kernel_table();
+    mmu_set_page_dir((uint32_t)kernel_page_dir);
 }

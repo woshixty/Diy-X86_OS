@@ -2,6 +2,7 @@
 #define MMU_H
 
 #include "comm/types.h"
+#include "comm/cpu_instr.h"
 
 #define PDE_CNT 1024
 
@@ -39,5 +40,9 @@ typedef union _pte_t {
     };
     
 }pte_t;
+
+static inline void mmu_set_page_dir(uint32_t paddr) {
+    write_cr3(paddr);
+}
 
 #endif
