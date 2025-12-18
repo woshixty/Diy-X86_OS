@@ -5,6 +5,7 @@
 #include "comm/cpu_instr.h"
 
 #define PDE_CNT 1024
+#define PTE_P   (1 << 0)
 
 typedef union _pde_t {
     uint32_t v;
@@ -40,6 +41,23 @@ typedef union _pte_t {
     };
     
 }pte_t;
+
+static inline uint32_t pde_index(uint32_t vaddr) {
+    int index = (vaddr >> 22);
+    return index;
+}
+
+static inline uint32_t pte_index(uint32_t vaddr) {
+    return (vaddr >> 12) & 0x3FF;
+}
+
+static inline uint32_t pde_paddr(pde_t* pde) {
+    return pde->phy_pt_addr << 12;
+}
+
+static inline uint32_t pte_paddr(pte_t* pte) {
+    return pte->phy_page_addr << 12;
+}
 
 static inline void mmu_set_page_dir(uint32_t paddr) {
     write_cr3(paddr);
