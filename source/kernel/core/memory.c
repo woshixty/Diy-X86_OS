@@ -71,6 +71,9 @@ pte_t* find_pte(pde_t* page_dir, uint32_t vaddr, int alloc) {
         if(pg_paddr == 0) {
             return (pte_t*)0;
         }
+
+        pde->v = pg_paddr | PDE_P; 
+
         page_table = (pte_t*)pg_paddr;
         kernel_memset(page_table, 0, MEM_PAGE_SIZE);
     }
@@ -110,6 +113,7 @@ void create_kernel_table(void) {
         
         uint32_t vstart = down2((uint32_t)map->vstart, MEM_PAGE_SIZE);
         uint32_t vend = up2((uint32_t)map->vend, MEM_PAGE_SIZE);
+        uint32_t paddr = down2((uint32_t)map->pstart, MEM_PAGE_SIZE);
         int page_count = (vend - vstart) / MEM_PAGE_SIZE;
 
         memory_create_map(kernel_page_dir, vstart, (uint32_t)map->pstart, page_count, map->perm);

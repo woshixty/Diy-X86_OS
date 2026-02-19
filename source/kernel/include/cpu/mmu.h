@@ -6,6 +6,7 @@
 
 #define PDE_CNT 1024
 #define PTE_P   (1 << 0)
+#define PDE_P   (1 << 0)
 
 typedef union _pde_t {
     uint32_t v;

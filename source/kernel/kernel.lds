@@ -13,6 +13,7 @@ SECTIONS {
 	}
 	PROVIDE(e_text = .);
 
+	. = ALIGN(4096);
 	PROVIDE(s_data = .);
 	.data : {
 		*(.data)
