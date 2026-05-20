@@ -24,14 +24,19 @@ static int tss_init (task_t * task, uint32_t entry, uint32_t esp) {
 
     // tss段初始化
     kernel_memset(&task->tss, 0, sizeof(tss_t));
+
+    int code_sel, data_sel;
+    code_sel = task_manager.app_code_sel | SEG_CPL3;
+    data_sel = task_manager.app_data_sel | SEG_CPL3;
+
     task->tss.eip = entry;
     task->tss.esp = task->tss.esp0 = esp;
-    task->tss.ss0 = KERNEL_SELECTOR_DS;
+    task->tss.ss0 = data_sel;
     task->tss.eip = entry;
     task->tss.eflags = EFLAGS_DEFAULT | EFLAGS_IF;
     task->tss.es = task->tss.ss = task->tss.ds
-            = task->tss.fs = task->tss.gs = KERNEL_SELECTOR_DS;   // 暂时写死
-    task->tss.cs = KERNEL_SELECTOR_CS;    // 暂时写死
+            = task->tss.fs = task->tss.gs = data_sel;   // 暂时写死
+    task->tss.cs = code_sel;    // 暂时写死
     task->tss.iomap = 0;
 
     uint32_t page_dir = memory_create_uvm();
@@ -104,6 +109,18 @@ static void idle_task_entry (void) {
 }
 
 void task_manager_init (void) {
+    int sel = gdt_alloc_desc();
+    segment_desc_set(sel, 0x00000000, 0xFFFFFFFF,
+        SEG_P_PRESENT | SEG_DPL3 | SEG_S_NORMAL | SEG_TYPE_DATA | SEG_TYPE_RW | SEG_D
+    );
+    task_manager.app_data_sel = sel;
+
+    sel = gdt_alloc_desc();
+    segment_desc_set(sel, 0x00000000, 0xFFFFFFFF,
+        SEG_P_PRESENT | SEG_DPL3 | SEG_S_NORMAL | SEG_TYPE_CODE | SEG_TYPE_RW | SEG_D
+    );
+    task_manager.app_code_sel = sel;
+ 
     list_init(&task_manager.ready_list);
     list_init(&task_manager.task_list);
     list_init(&task_manager.sleep_list);
