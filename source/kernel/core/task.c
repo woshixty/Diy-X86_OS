@@ -11,7 +11,7 @@
 static uint32_t idle_task_stack[IDLE_TASK_SIZE];
 static task_manager_t task_manager;
 
-static int tss_init (task_t * task, uint32_t entry, uint32_t esp) {
+static int tss_init (task_t * task, int flag, uint32_t entry, uint32_t esp) {
     // 为TSS分配GDT
     int tss_sel = gdt_alloc_desc();
     if (tss_sel < 0) {
@@ -26,8 +26,13 @@ static int tss_init (task_t * task, uint32_t entry, uint32_t esp) {
     kernel_memset(&task->tss, 0, sizeof(tss_t));
 
     int code_sel, data_sel;
-    code_sel = task_manager.app_code_sel | SEG_CPL3;
-    data_sel = task_manager.app_data_sel | SEG_CPL3;
+    if(flag & TASK_FLAGS_SYSTEM) {
+        code_sel = KERNEL_SELECTOR_CS;
+        data_sel = KERNEL_SELECTOR_DS;
+    } else {
+        code_sel = task_manager.app_code_sel | SEG_CPL3;
+        data_sel = task_manager.app_data_sel | SEG_CPL3;
+    }
 
     task->tss.eip = entry;
     task->tss.esp = task->tss.esp0 = esp;
@@ -50,10 +55,10 @@ static int tss_init (task_t * task, uint32_t entry, uint32_t esp) {
     return 0;
 }
 
-int task_init(task_t* task, const char* name, uint32_t entry, uint32_t esp) {
+int task_init(task_t* task, const char* name, int flag, uint32_t entry, uint32_t esp) {
     ASSERT(task != (task_t*)0);
 
-    tss_init(task, entry, esp);
+    tss_init(task, flag, entry, esp);
 
     kernel_strncpy(task->name, name, TASK_NAME_SIZE);
     task->state = TASK_CREATED;
@@ -88,7 +93,7 @@ void task_first_init (void) {
 
     uint32_t first_start = (uint32_t)first_task_entry;
 
-    task_init(&task_manager.first_task, "first task", first_start, 0);
+    task_init(&task_manager.first_task, "first task", 0, first_start, 0);
     write_tr(task_manager.first_task.tss_sel);
     task_manager.curr_task = &task_manager.first_task;
 
@@ -126,7 +131,12 @@ void task_manager_init (void) {
     list_init(&task_manager.sleep_list);
     task_manager.curr_task = (task_t*)0;
 
-    task_init(&task_manager.idle_task, "idle_task", (uint32_t)idle_task_entry, (uint32_t)(idle_task_stack + IDLE_TASK_SIZE));
+    task_init(&task_manager.idle_task, 
+        "idle_task", 
+        TASK_FLAGS_SYSTEM, 
+        (uint32_t)idle_task_entry, 
+        (uint32_t)(idle_task_stack + IDLE_TASK_SIZE)
+    );
 }
 
 void task_set_ready(task_t* task) {
