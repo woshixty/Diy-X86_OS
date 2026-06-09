@@ -192,7 +192,7 @@ uint32_t memory_alloc_page(void) {
 }
 
 static pte_t* curr_page_dir(void) {
-    return (pde_t*)(task_current()->tss.cr3)
+    return (pde_t*)(task_current()->tss.cr3);
 }
 
 void memory_free_page(uint32_t addr) {
