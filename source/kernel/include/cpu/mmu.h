@@ -10,6 +10,7 @@
 #define PDE_W   (1 << 1)
 #define PTE_W   (1 << 1)
 #define PDE_U   (1 << 2)
+#define PTE_U   (1 << 2)
 
 typedef union _pde_t {
     uint32_t v;
