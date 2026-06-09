@@ -35,4 +35,6 @@ void memory_init(boot_info_t* boot_info);
 uint32_t memory_create_uvm(void);
 
 int memory_set_page_for (uint32_t addr, uint32_t size, int perm);
+uint32_t memory_alloc_page(void);
+void memory_free_page(uint32_t addr);
 #endif
